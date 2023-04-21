@@ -1,0 +1,15 @@
+{
+  "name": "sports_scheduler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -e *.js,*.ejs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ayush Vijayant <ayush.vijayant@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
