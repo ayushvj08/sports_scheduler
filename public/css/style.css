@@ -1,0 +1,21 @@
+
+.app {
+    padding: 1rem 0;
+    text-align: center;
+  }
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 14rem;
+  }
+  .nav-logo {
+    width: 12rem;
+  }
+  @media screen and (max-width: 768px) {
+    .navbar {
+      padding: 0 10%;
+    }
+    .nav-logo {
+      width: 51%;
+    }
+  }
