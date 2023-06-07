@@ -13,7 +13,24 @@
     <div class="app">
       <%- include('navbar') %>
       <hr />
-      <h1>Welcome to sports scheduler</h1>
+      <div class="content-box">
+        <h1 class="text-4xl mt-4 font-bold">Welcome to sports scheduler!</h1>
+        <p class="text-3xl my-2 text-blue-500">
+          <a href="/sports">Create a New Sport</a>
+        </p>
+        <hr />
+        <p class="text-2xl my-2">The following sports are available</p>
+        <div class="sports-list">
+          <% for(i=0; i < sports.length; i++) { %>
+          <div class="flex">
+            <p>
+              <a href="/sports/<%= sports[i].id %>"><%- sports[i].name %></a>
+            </p>
+            <p><%#- sports[i].numberOfPlayers %></p>
+          </div>
+          <% } %>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%- csrfToken %>" />
+
+    <title>Document</title>
+  </head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function submitform(sportId = "#", sessionId = "#") {
+      if (
+        schedule !== "" &&
+        venue !== "" &&
+        sportId === "#" &&
+        sessionId === "#"
+      )
+        document.getElementById("session_form").submit();
+      else {
+        var schedule = document.getElementById("schedule").value;
+        var venue = document.getElementById("venue").value;
+        var players = document.getElementById("players").value;
+        var epc = document.getElementById("extraPlayercount").value;
+        var token = document
+          .querySelector('meta[name="csrf-token"]')
+          .getAttribute("content");
+        console.log(token);
+        fetch(`/sports/${sportId}/session/${sessionId}`, {
+          method: "put",
+          credentials: "same-origin", // <-- includes cookies in the request
+          headers: {
+            "Content-Type": "application/json",
+            // "X-CSRF-Token": token,
+          },
+          body: JSON.stringify({
+            schedule: schedule,
+            venue: venue,
+            players: players,
+            epc: epc,
+            _csrf: token,
+          }),
+        })
+          .then((response) => {
+            if (response.ok)
+              window.location.href = `/sports/${
+                sportId + "/session/" + sessionId
+              }`;
+          })
+          .catch((error) => console.error(error));
+      }
+    }
+  </script>
+  <body>
+    <div class="app">
+      <%- include('navbar') %>
+      <main class="content-box">
+        <h1 class="text-4xl">
+          <%= session ? "Editing " : "New " + sport.name %> Session
+        </h1>
+        <form id="session_form" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+          <section class="form-wrapper my-4 border border-blue-500 p-4 rounded">
+            <div class="mt-4">
+              <label
+                for="schedule"
+                class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                >When will be this sport session be held?</label
+              >
+              <input
+                type="datetime-local"
+                id="schedule"
+                name="schedule"
+                value="<%- session ?  session.schedule.toISOString().split('.')[0] : '' %>"
+                required="required"
+                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
+              />
+            </div>
+            <div class="mt-4">
+              <label
+                for="venue"
+                class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                >Where will this session be Played?</label
+              >
+              <input
+                type="text"
+                id="venue"
+                name="venue"
+                value="<%- session ? session.venue : '' %>"
+                required="required"
+                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
+              />
+            </div>
+            <div class="mt-4">
+              <label
+                for="players"
+                class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                >Who all will be joining you in this Session?
+                (Comma-seperated)</label
+              >
+              <input
+                type="text"
+                id="players"
+                name="players"
+                placeholder="Eg: Virat,Mahi,Rohit,Chris,Saurav"
+                value="<%- session ? session.players : '' %>"
+                required="required"
+                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
+              />
+            </div>
+            <div class="mt-4">
+              <label
+                for="extraPlayercount"
+                class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                >How many more players you need?</label
+              >
+              <input
+                type="text"
+                id="extraPlayercount"
+                name="extraPlayercount"
+                value="<%- session ? session.extraPlayercount : '' %>"
+                required="required"
+                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
+              />
+            </div>
+            <div class="mt-8">
+              <div
+                class="w-full px-4 py-2 text-center cursor-pointer tracking-wide transition-colors duration-300 transform bg-primary hover:bg-primary/70 focus:outline-none focus:bg-primary/70 bg-blue-500 text-white"
+                onclick="submitform( <%- session ? sport.id +`,`+ session.id : '' %>)"
+              >
+                <%- session ? 'Update' : 'Create' %> Session
+              </div>
+            </div>
+          </section>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

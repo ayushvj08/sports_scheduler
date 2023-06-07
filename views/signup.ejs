@@ -33,22 +33,27 @@
             Thanks for <span class="text-primary">Joining</span> Us
           </p>
 
-          <form method="POST" action="">
-            <input
-              type="hidden"
-              name="_token"
-              value="EyOvESup1v66Z6aHUPF1QAUt2erGQOksOPinY4qM"
-            />
+          <form method="POST" action="/users">
+            <input type="hidden" name="_csrf" value="<%- csrfToken %>" />
             <div class="mt-4">
               <label class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
-                >Username</label
+                >firstname</label
               >
               <input
                 type="text"
-                name="username"
+                name="firstname"
                 value=""
-                required="required"
-                autocomplete="username"
+                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
+              />
+            </div>
+            <div class="mt-4">
+              <label class="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                >lastname</label
+              >
+              <input
+                type="text"
+                name="lastname"
+                value=""
                 class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
               />
             </div>
@@ -60,7 +65,6 @@
                 type="email"
                 name="email"
                 value=""
-                required="required"
                 autocomplete="email"
                 class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
               />
@@ -72,7 +76,6 @@
               <input
                 type="password"
                 name="password"
-                required="required"
                 class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20"
               />
             </div>

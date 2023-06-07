@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%- csrfToken %>" />
+
+    <link rel="icon" href="/img/icon.png" />
+    <title><%- title %></title>
+  </head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function deleteSport(id) {
+      fetch(`/sports/${id}`, {
+        method: "delete",
+        credentials: "same-origin", // <-- includes cookies in the request
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) window.location.href = "/";
+          // window.location.reload();
+        })
+        .catch((error) => console.error(error));
+    }
+  </script>
+  <body>
+    <div class="app">
+      <%- include('navbar') %>
+      <hr />
+      <div class="content-box">
+        <p class="text-4xl my-2">
+          <%= sport.name %> Session #<%= session.id %>
+        </p>
+        <a
+          class="text-yellow-500"
+          href="/sports/<%= sport.id + '/session/' + session.id %>/edit"
+          >Edit Session</a
+        >
+        <button
+          class="text-red-500"
+          onclick="var result = window.confirm(`Do you want to confirm delete <%- sport.name %>?\nThis action cannot be undone!`)
+        if(result) deleteSport(<%= sport.id %>)
+      "
+        >
+          Cancel Session
+        </button>
+        <p class="text-lg text-blue-500">
+          <i
+            >This session is scheduled for <%= session.schedule.toISOString()
+            %>, to be played at <%= session.venue %>.</i
+          >
+        </p>
+        <p class="text-3xl">Players</p>
+        <% for(i=0; i < session.players.length; i++) { %>
+        <div><p><%= session.players[i] %></p></div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>

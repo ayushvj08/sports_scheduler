@@ -1,1 +1,4 @@
 node_modules
+views/navbar1.ejs
+views/sidebar.ejs
+views/index1.ejs

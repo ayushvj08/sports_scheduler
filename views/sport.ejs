@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/img/icon.png" />
+    <title><%- title %></title>
+  </head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function deleteSport(id) {
+      fetch(`/sports/${id}`, {
+        method: "delete",
+        credentials: "same-origin", // <-- includes cookies in the request
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) window.location.href = "/";
+          // window.location.reload();
+        })
+        .catch((error) => console.error(error));
+    }
+  </script>
+  <body>
+    <div class="app">
+      <%- include('navbar') %>
+      <hr />
+      <div class="content-box">
+        <p class="text-4xl my-2"><%= sport.name %></p>
+        <a class="text-yellow-500" href="/sports/<%= sport.id %>/edit">Edit</a>
+        <a
+          class="ml-6 text-red-500"
+          onclick="var result = window.confirm(`Do you want to confirm delete <%- sport.name %>?\nThis action cannot be undone!`)
+          if(result) deleteSport(<%= sport.id %>)
+        "
+        >
+          Delete
+        </a>
+
+        <p>
+          <a
+            class="text-2xl text-blue-500"
+            href="/sports/<%= sport.id %>/session"
+            >Create a new Session</a
+          >
+        </p>
+        <!-- <p class="text-3xl text-bold">Sessions</p> -->
+
+        <hr />
+        <p class="text-2xl text-bold my-2">
+          <%- sessions.length === 0 ? "There are no sessions available for " +
+          "this sport! Consider creating a new session." : 'List of Sessions' %>
+        </p>
+        <% for(i=0; i < sessions.length; i++) { %>
+        <a href="/sports/<%= sport.id + '/session/' + sessions[i].id %>"
+          ><p>
+            <span class="text-green-500"
+              >#<%= sessions[i].id + " " + sessions[i].venue %></span
+            >
+            <%= sessions[i].schedule %>
+          </p></a
+        >
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
