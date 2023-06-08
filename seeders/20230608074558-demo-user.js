@@ -37,7 +37,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete("User", null, {});
+    return await queryInterface.bulkDelete("User", null, {});
 
     /**
      * Add commands to revert seed here.
