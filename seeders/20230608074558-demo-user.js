@@ -14,22 +14,22 @@ module.exports = {
      * }], {});
      */
 
-    return await queryInterface.bulkInsert("User", [
+    return await queryInterface.bulkInsert("Users", [
       {
-        firstName: "John",
-        lastName: "Doe",
+        firstname: "John",
+        lastname: "Doe",
         email: "demo@email.com",
         role: "superadmin",
-        password: bcrypt.hash("123456", saltRounds),
+        password: await bcrypt.hash("123456", saltRounds),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        firstName: "Alpha",
-        lastName: "Player",
-        email: "alpha@email.com",
+        firstname: "Alpha",
+        lastname: "Player",
+        email: "player@email.com",
         role: "player",
-        password: bcrypt.hash("123456", saltRounds),
+        password: await bcrypt.hash("123456", saltRounds),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -37,7 +37,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    return await queryInterface.bulkDelete("User", null, {});
+    return await queryInterface.bulkDelete("Users", null, {});
 
     /**
      * Add commands to revert seed here.
