@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       sports.hasMany(models.Session, {
         foreignKey: "sportId",
       });
+      sports.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
     }
   }
   sports.init(

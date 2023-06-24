@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       Session.belongsTo(models.sports, {
         foreignKey: "sportId",
       });
+      Session.belongsTo(models.User, {
+        foreignKey: "userId",
+      });
     }
   }
   Session.init(
