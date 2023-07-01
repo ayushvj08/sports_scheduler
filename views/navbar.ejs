@@ -1,4 +1,5 @@
 <link href="/css/style.css" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
 
 <header class="navbar items-center">
   <div class="flex items-center">
@@ -9,6 +10,12 @@
       href="/users"
       >users</a
     >` : null : '' %>
+
+    <%- typeof(user) === 'undefined' ? `<a
+      class="ml-2 flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+      href="/my_sessions"
+      >my sessions</a
+    >` : '' %>
   </div>
 
   <div class="flex items-center justify-center">

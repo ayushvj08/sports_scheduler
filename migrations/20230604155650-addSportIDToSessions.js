@@ -16,6 +16,8 @@ module.exports = {
     await queryInterface.addConstraint("Sessions", {
       fields: ["sportId"],
       type: "foreign key",
+      onDelete: "CASCADE",
+
       references: {
         table: "sports",
         field: "id",

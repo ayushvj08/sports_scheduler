@@ -4,24 +4,37 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%- csrfToken %>" />
+
     <link rel="icon" href="/img/icon.png" />
     <title><%- title %></title>
   </head>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     function deleteSport(id) {
+      var token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
       fetch(`/sports/${id}`, {
         method: "delete",
         credentials: "same-origin", // <-- includes cookies in the request
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          _csrf: token,
+        }),
       })
         .then((response) => {
           if (response.ok) window.location.href = "/";
           // window.location.reload();
         })
         .catch((error) => console.error(error));
+    }
+
+    function prevSession_onclick() {
+      const a = document.getElementById("prevSession_section");
+      a.style.display = "block";
     }
   </script>
   <body>
@@ -39,31 +52,59 @@
         >
           Delete
         </a>
+        <hr />
 
-        <p>
+        <!-- <p class="text-3xl text-bold">Sessions</p> -->
+
+        <p class="text-2xl text-bold my-2">
+          <%- sessions.length === 0 ? "There are no Upcoming sessions " +
+          "available for this sport! Consider creating a new session." :
+          'Upcoming Sessions' %>
+        </p>
+
+        <% for(i=0; i < upcomingSessions.length; i++) { %>
+        <div class="my-1 box border border-gray-600 rounded-md p-1 w-3/4">
           <a
-            class="text-2xl text-blue-500"
+            class="flex justify-between"
+            href="/sports/<%= sport.id + '/session/' + sessions[i].id %>"
+            ><p><%= upcomingSessions[i].schedule %></p>
+            <span class="text-red-500">
+              <%= upcomingSessions[i].extraPlayercount <= 1 ?
+              upcomingSessions[i].extraPlayercount === 0 ? 'Fully Booked' :
+              'Last slot' : upcomingSessions[i].extraPlayercount + ' slots' %>
+            </span>
+          </a>
+        </div>
+        <% } %>
+
+        <p class="my-2">
+          <a
+            class="text-xl text-blue-500"
             href="/sports/<%= sport.id %>/session"
             >Create a new Session</a
           >
         </p>
-        <!-- <p class="text-3xl text-bold">Sessions</p> -->
 
-        <hr />
-        <p class="text-2xl text-bold my-2">
-          <%- sessions.length === 0 ? "There are no sessions available for " +
-          "this sport! Consider creating a new session." : 'List of Sessions' %>
-        </p>
-        <% for(i=0; i < sessions.length; i++) { %>
-        <a href="/sports/<%= sport.id + '/session/' + sessions[i].id %>"
-          ><p>
-            <span class="text-green-500"
-              >#<%= sessions[i].id + " " + sessions[i].venue %></span
-            >
-            <%= sessions[i].schedule %>
-          </p></a
+        <button
+          style="display: <%= previousSessions.length > 0 ? 'block' : 'none' %>"
+          class="p-1 rounded border border-blue-500"
+          onclick="prevSession_onclick()"
         >
-        <% } %>
+          View Previous Sessions
+        </button>
+        <section style="display: none" id="prevSession_section">
+          <% for(i=0; i < previousSessions.length; i++) { %>
+          <a href="/sports/<%= sport.id + '/session/' + sessions[i].id %>"
+            ><p>
+              <span class="text-green-500"
+                >#<%= previousSessions[i].id + " " + previousSessions[i].venue
+                %></span
+              >
+              <%= previousSessions[i].schedule %>
+            </p></a
+          >
+          <% } %>
+        </section>
       </div>
     </div>
   </body>

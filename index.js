@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const db = require("./models/index");
+const { Op } = require("sequelize");
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(bodyParser.json());
@@ -94,12 +95,56 @@ function requireAdmin(req, res, next) {
   }
 }
 
-app.get("/", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
-  const sports = await db.sports.findAll();
+app.get("/report", async (request, response) => {
+  console.log(new Date(request.query.fromdate));
 
+  let sports = await db.sports.findAll();
+
+  let data = await Promise.all(
+    sports.map(async (sport) => {
+      sessionData = await db.Session.count({
+        where: {
+          sportId: sport.dataValues.id,
+          createdAt: {
+            [Op.between]: request.query.fromdate
+              ? [
+                  new Date(request.query.fromdate),
+                  request.query.todate
+                    ? new Date(request.query.todate)
+                    : new Date(),
+                ]
+              : [Number(null), new Date()],
+          },
+        },
+      });
+      const obj = {
+        language: sport.dataValues.name,
+        value: sessionData,
+      };
+      return obj;
+    })
+  );
+  data = JSON.stringify(data);
+  // console.log(data);
+  response.render("report", { data, csrfToken: request.csrfToken() });
+});
+
+app.get("/", async (request, response) => {
+  const sports = await db.sports.findAll();
+  const user = await db.User.findByPk(request.user ? request.user.id : 1);
+
+  let sessions = await db.Session.findAll({
+    where: {
+      schedule: { [Op.gte]: new Date() },
+      players: { [Op.contains]: [JSON.stringify(user?.dataValues)] },
+    },
+  });
+  sessions = sessions.map((session) => session.dataValues);
+  // console.log(await db.sports.count());
   response.render("index", {
     title: "HomePage",
     sports: sports,
+    sessions,
     user: request.user,
   });
 });
@@ -195,7 +240,7 @@ app.get("/signout", (request, response, next) => {
 
 app.get(
   "/sports",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sports = await db.sports.findAll();
     response.render("sports", {
@@ -210,12 +255,13 @@ app.get(
 
 app.post(
   "/sports",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     console.log(request.body);
     const sport = await db.sports.create({
       name: request.body.name,
       numberOfPlayers: request.body.nop,
+      userId: request.user?.id,
     });
 
     response.redirect("/");
@@ -224,15 +270,23 @@ app.post(
 
 app.get(
   "/sports/:id",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.id);
     const sessions = await db.Session.findAll({ where: { sportId: sport.id } });
 
+    const upcomingSessions = sessions.filter(
+      (session) => session.schedule >= new Date()
+    );
+    const previousSessions = sessions.filter(
+      (session) => session.schedule < new Date()
+    );
     response.render("sport", {
       title: sport.name,
       sport: sport,
       sessions,
+      previousSessions,
+      upcomingSessions,
       csrfToken: request.csrfToken(),
       user: request.user,
     });
@@ -241,7 +295,7 @@ app.get(
 
 app.get(
   "/sports/:id/edit",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.id);
     response.render("sports", {
@@ -255,7 +309,7 @@ app.get(
 
 app.put(
   "/sports/:id",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.id);
     console.log(request.body, request.params.id);
@@ -270,7 +324,7 @@ app.put(
 
 app.delete(
   "/sports/:id",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.id);
     if (sport)
@@ -286,13 +340,17 @@ app.delete(
 
 app.get(
   "/sports/:sportId/session",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
+    const users = await db.User.findAll();
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = null;
+    console.log(new Date()); // UTC Time
+
     response.render("session", {
       sport,
       session,
+      users,
       csrfToken: request.csrfToken(),
       user: request.user,
     });
@@ -301,15 +359,18 @@ app.get(
 
 app.post(
   "/sports/:sportId/session",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
+    const pl = JSON.parse(request.body.players)["players"];
+    console.log(pl, typeof pl);
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.create({
       schedule: request.body.schedule,
       venue: request.body.venue,
-      players: request.body.players.split(","),
+      players: request.user ? [request.user].concat(pl) : pl,
       extraPlayercount: Number(request.body.extraPlayercount),
       sportId: sport.id,
+      userId: request.user?.id,
     });
     response.redirect(`/sports/${sport.id}`);
   }
@@ -317,32 +378,53 @@ app.post(
 
 app.get(
   "/sports/:sportId/session/:sessionId",
-  connectEnsureLogin.ensureLoggedIn(),
+
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.findByPk(request.params.sessionId);
 
+    const flag = session.players.includes(
+      JSON.stringify(await db.User.findByPk(request.user))
+    );
+    console.log(flag);
     response.render("session_view", {
       title: sport.name,
       sport,
       session,
+      flag,
       csrfToken: request.csrfToken(),
       user: request.user,
     });
   }
 );
 
+app.delete("/sports/:sportId/session/:sessionId", async (request, response) => {
+  const session = await db.Session.findByPk(request.params.sessionId);
+  if (session)
+    try {
+      await db.Session.destroy({ where: { id: request.params.sessionId } });
+      return response.json(true);
+    } catch (error) {
+      console.log(error);
+    }
+  else response.redirect("/");
+});
+
 app.get(
   "/sports/:sportId/session/:sessionId/edit",
-  connectEnsureLogin.ensureLoggedIn(),
 
   async (request, response) => {
+    const users = await db.User.findAll();
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.findByPk(request.params.sessionId);
+    let sessionPlayers = session.players.map((pl) => JSON.parse(pl));
+    sessionPlayers = JSON.stringify({ players: sessionPlayers });
 
     response.render("session", {
       title: sport.name,
+      users,
       sport,
+      sessionPlayers,
       session,
       csrfToken: request.csrfToken(),
       user: request.user,
@@ -352,21 +434,44 @@ app.get(
 
 app.put(
   "/sports/:sportId/session/:sessionId",
-  connectEnsureLogin.ensureLoggedIn(),
-  requireAdmin,
+
+  // requireAdmin,
   async (request, response) => {
     const sport = await db.sports.findByPk(request.params.sportId);
+    const players = request.body.players.players.map((e) => JSON.stringify(e));
     const updatedSession = await db.Session.update(
       {
         schedule: request.body.schedule,
         venue: request.body.venue,
-        players: request.body.players.split(","),
+        players: players,
         extraPlayercount: request.body.epc,
       },
       { where: { id: request.params.sessionId } }
     );
     if (request.accepts("html")) return response.json(updatedSession);
     else response.redirect(`/sports/${sport.id}`);
+  }
+);
+
+app.put(
+  "/sports/:sportId/session/:sessionId/join",
+  async (request, response) => {
+    console.log(Number(request.params.sportId));
+    const sport = await db.sports.findByPk(request.params.sportId);
+    const session = await db.Session.findByPk(request.params.sessionId);
+    const players = session.players;
+    const updatedSession = await db.Session.update(
+      {
+        players: players.concat(request.user),
+      },
+      {
+        where: {
+          id: request.params.sessionId,
+        },
+      }
+    );
+    if (request.accepts("html")) return response.json(updatedSession);
+    else return response.redirect("/");
   }
 );
 

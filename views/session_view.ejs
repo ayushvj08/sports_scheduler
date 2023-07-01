@@ -11,19 +11,52 @@
   </head>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    function deleteSport(id) {
-      fetch(`/sports/${id}`, {
+    function deleteSession(sportId, sessionId) {
+      var token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+      fetch(`/sports/${sportId}/session/${sessionId}`, {
         method: "delete",
         credentials: "same-origin", // <-- includes cookies in the request
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          _csrf: token,
+        }),
       })
         .then((response) => {
           if (response.ok) window.location.href = "/";
           // window.location.reload();
         })
         .catch((error) => console.error(error));
+    }
+
+    function joinSession(sportId, sessionId) {
+      const url = `/sports/${sportId}/session/${sessionId}`;
+      console.log(url);
+      var token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+      fetch(url + "/join", {
+        method: "put",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          _csrf: token,
+        }),
+      })
+        .then((response) => {
+          window.location.href = url;
+          // window.location.reload();
+        })
+        .catch((error) => console.error(error));
+    }
+
+    function removePlayer() {
+      console.log(1);
     }
   </script>
   <body>
@@ -41,22 +74,49 @@
         >
         <button
           class="text-red-500"
-          onclick="var result = window.confirm(`Do you want to confirm delete <%- sport.name %>?\nThis action cannot be undone!`)
-        if(result) deleteSport(<%= sport.id %>)
+          onclick="var result = window.confirm(`Do you want to confirm delete #<%- session.id %>?\nThis action cannot be undone!`)
+        if(result) deleteSession(<%= sport.id + ',' + session.id %>)
       "
         >
           Cancel Session
         </button>
         <p class="text-lg text-blue-500">
           <i
-            >This session is scheduled for <%= session.schedule.toISOString()
-            %>, to be played at <%= session.venue %>.</i
+            >This session is scheduled for <%= session.schedule %>, to be played
+            at <%= session.venue %>.</i
           >
         </p>
         <p class="text-3xl">Players</p>
-        <% for(i=0; i < session.players.length; i++) { %>
-        <div><p><%= session.players[i] %></p></div>
-        <% } %>
+        <section class="my-4 grid gap-3 grid-cols-2">
+          <% for(i=0; i < session.players.length; i++) { %>
+          <div
+            class="flex rounded justify-between px-2 py-1 border border-gray-600"
+          >
+            <p class="text-xl">
+              <%= session.players[i] ? JSON.parse(session.players[i]).firstname
+              : '' %>
+            </p>
+            <p class="cursor-pointer text-bold text-xl text-gray-600">
+              <i class="text-yellow-500 mr-4 disabled"
+                ><%= session.userId == JSON.parse(session.players[i]).id ?
+                'organiser' : '' %>
+              </i>
+              <!-- <span
+                class="text-white bg-gray-400 rounded-lg px-2"
+                onclick="removePlayer()"
+                ><%#= typeof user === 'undefined' ? "x" : null %></span
+              > -->
+            </p>
+          </div>
+          <% } %>
+        </section>
+
+        <i
+          class="cursor-pointer"
+          onclick="joinSession(<%- sport.id + ',' + session.id  %>)"
+        >
+          <%= flag ? 'Leave' : 'Join' %> this session
+        </i>
       </div>
     </div>
   </body>

@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       sports.hasMany(models.Session, {
         foreignKey: "sportId",
+        onDelete: "cascade",
+        hooks: true,
       });
       sports.belongsTo(models.User, {
         foreignKey: "userId",
