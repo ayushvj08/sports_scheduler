@@ -32,19 +32,21 @@
         .catch((error) => console.error(error));
     }
 
-    function joinSession(sportId, sessionId) {
+    function associateCurrentUserWithSession(sportId, sessionId) {
       const url = `/sports/${sportId}/session/${sessionId}`;
       console.log(url);
       var token = document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
-      fetch(url + "/join", {
+
+      fetch(url + "/associate", {
         method: "put",
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          associate: "<%= currentUserInSportSession ? 'leave' : 'join' %>",
           _csrf: token,
         }),
       })
@@ -68,12 +70,12 @@
           <%= sport.name %> Session #<%= session.id %>
         </p>
         <a
-          class="text-yellow-500"
+          class="font-semibold border border-blue-500 rounded px-1 mr-2 text-yellow-500"
           href="/sports/<%= sport.id + '/session/' + session.id %>/edit"
-          >Edit Session</a
-        >
+          >Edit
+        </a>
         <button
-          class="text-red-500"
+          class="text-red-500 border border-blue-500 rounded px-1 mx-2"
           onclick="var result = window.confirm(`Do you want to confirm delete #<%- session.id %>?\nThis action cannot be undone!`)
         if(result) deleteSession(<%= sport.id + ',' + session.id %>)
       "
@@ -113,9 +115,9 @@
 
         <i
           class="cursor-pointer"
-          onclick="joinSession(<%- sport.id + ',' + session.id  %>)"
+          onclick="associateCurrentUserWithSession(<%- sport.id + ',' + session.id  %>)"
         >
-          <%= flag ? 'Leave' : 'Join' %> this session
+          <%= currentUserInSportSession ? 'Leave' : 'Join' %> this session
         </i>
       </div>
     </div>

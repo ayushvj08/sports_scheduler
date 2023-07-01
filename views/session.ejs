@@ -121,7 +121,12 @@
     localStorage.setItem("players", <%- typeof sessionPlayers !== 'undefined' ? JSON.stringify(sessionPlayers) : JSON.stringify(data) %>);
     generateHtml()
     window.onload = disableOptions()
-
+    if(localStorage.players !== undefined){
+      if (JSON.parse(localStorage.players).players.length == 0)
+      // set current user in LS
+      setPlayers('<%- JSON.stringify(user.dataValues) %>')
+    }
+    console.log(<%- JSON.stringify(user.dataValues) %>)
     function submitform(sportId = "#", sessionId = "#") {
       if (
         schedule !== "" &&

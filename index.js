@@ -361,13 +361,13 @@ app.post(
   "/sports/:sportId/session",
 
   async (request, response) => {
-    const pl = JSON.parse(request.body.players)["players"];
-    console.log(pl, typeof pl);
+    const players = JSON.parse(request.body.players)["players"];
+    console.log(players, typeof players);
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.create({
       schedule: request.body.schedule,
       venue: request.body.venue,
-      players: request.user ? [request.user].concat(pl) : pl,
+      players: players,
       extraPlayercount: Number(request.body.extraPlayercount),
       sportId: sport.id,
       userId: request.user?.id,
@@ -383,15 +383,15 @@ app.get(
     const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.findByPk(request.params.sessionId);
 
-    const flag = session.players.includes(
-      JSON.stringify(await db.User.findByPk(request.user))
-    );
-    console.log(flag);
+    const currentUserInSportSession = request.user
+      ? session.players.includes(JSON.stringify(request.user.dataValues))
+      : false;
+    console.log(currentUserInSportSession);
     response.render("session_view", {
       title: sport.name,
       sport,
       session,
-      flag,
+      currentUserInSportSession,
       csrfToken: request.csrfToken(),
       user: request.user,
     });
@@ -454,26 +454,48 @@ app.put(
 );
 
 app.put(
-  "/sports/:sportId/session/:sessionId/join",
+  "/sports/:sportId/session/:sessionId/associate",
   async (request, response) => {
-    console.log(Number(request.params.sportId));
-    const sport = await db.sports.findByPk(request.params.sportId);
     const session = await db.Session.findByPk(request.params.sessionId);
-    const players = session.players;
+    console.log(request.body.associate);
+    let players = session.players;
+
+    request.body.associate === "join"
+      ? players.push(JSON.stringify(request.user.dataValues))
+      : (players = players.filter(
+          (player) => player !== JSON.stringify(request.user.dataValues)
+        ));
+
     const updatedSession = await db.Session.update(
-      {
-        players: players.concat(request.user),
-      },
-      {
-        where: {
-          id: request.params.sessionId,
-        },
-      }
+      { players: players },
+      { where: { id: request.params.sessionId } }
     );
     if (request.accepts("html")) return response.json(updatedSession);
     else return response.redirect("/");
   }
 );
+
+app.get("/my_sessions", async (request, response) => {
+  const user = await db.User.findByPk(1);
+  let sessions = await db.Session.findAll({
+    where: {
+      players: { [Op.contains]: [JSON.stringify(user.dataValues)] },
+    },
+  });
+  sessions = sessions.map((session) => session.dataValues);
+  const sports = await Promise.all(
+    sessions.map(async (session) => {
+      const s = await db.sports.findByPk(session.sportId);
+      return s.dataValues;
+    })
+  );
+  response.render("my_sessions", {
+    user: request.user,
+    sports,
+    sessions,
+    csrfToken: request.csrfToken(),
+  });
+});
 
 app.listen(3000, () => {
   console.group("Server started at port: 3000");

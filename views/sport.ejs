@@ -43,9 +43,13 @@
       <hr />
       <div class="content-box">
         <p class="text-4xl my-2"><%= sport.name %></p>
-        <a class="text-yellow-500" href="/sports/<%= sport.id %>/edit">Edit</a>
         <a
-          class="ml-6 text-red-500"
+          class="font-semibold border border-blue-500 rounded px-1 mr-2 text-yellow-500"
+          href="/sports/<%= sport.id %>/edit"
+          >Edit</a
+        >
+        <a
+          class="text-red-500 border border-blue-500 rounded px-1 mx-2"
           onclick="var result = window.confirm(`Do you want to confirm delete <%- sport.name %>?\nThis action cannot be undone!`)
           if(result) deleteSport(<%= sport.id %>)
         "
