@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="<%- csrfToken %>" />
 
-    <link rel="icon" href="/img/icon.png" />
-    <title><%- title %></title>
-  </head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    function deleteSession(sportId, sessionId) {
-      var token = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
-      fetch(`/sports/${sportId}/session/${sessionId}`, {
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="<%- csrfToken %>" />
+
+  <link rel="icon" href="/img/icon.png" />
+  <title><%- title %></title>
+</head>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  var token = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+
+  function deleteSession(sportId, sessionId) {
+    fetch(`/sports/${sportId}/session/${sessionId}`, {
         method: "delete",
         credentials: "same-origin", // <-- includes cookies in the request
         headers: {
@@ -25,21 +27,17 @@
           _csrf: token,
         }),
       })
-        .then((response) => {
-          if (response.ok) window.location.href = "/";
-          // window.location.reload();
-        })
-        .catch((error) => console.error(error));
-    }
+      .then((response) => {
+        if (response.ok) window.location.href = "/";
+        // window.location.reload();
+      })
+      .catch((error) => console.error(error));
+  }
 
-    function associateCurrentUserWithSession(sportId, sessionId) {
-      const url = `/sports/${sportId}/session/${sessionId}`;
-      console.log(url);
-      var token = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
+  function associateCurrentUserWithSession(sportId, sessionId) {
+    const url = `/sports/${sportId}/session/${sessionId}`;
 
-      fetch(url + "/associate", {
+    fetch(url + "/associate", {
         method: "put",
         credentials: "same-origin",
         headers: {
@@ -50,76 +48,105 @@
           _csrf: token,
         }),
       })
+      .then((response) => {
+        window.location.href = url;
+        // window.location.reload();
+      })
+      .catch((error) => console.error(error));
+  }
+
+  function removePlayer() {
+    console.log(1);
+  }
+
+  function cancelSession(sportId, sessionId) {
+    var result = window.confirm(
+      `This action cannot be undone!\nDo you still wish to continue?`
+    );
+    if (result) {
+      const cancellationReason = prompt(
+        "Why do you want to cancel this session? (Enter 5 or more characters)"
+      );
+      if (cancellationReason.length < 5) {
+        return 0;
+      }
+      fetch("/cancelSession/" + sessionId, {
+          method: "put",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cancelled: cancellationReason,
+            _csrf: token,
+          }),
+        })
         .then((response) => {
-          window.location.href = url;
-          // window.location.reload();
+          if (response.ok) window.location.reload();
         })
         .catch((error) => console.error(error));
     }
+  }
+</script>
 
-    function removePlayer() {
-      console.log(1);
-    }
-  </script>
-  <body>
-    <div class="app">
-      <%- include('navbar') %>
-      <hr />
-      <div class="content-box">
-        <p class="text-4xl my-2">
-          <%= sport.name %> Session #<%= session.id %>
-        </p>
-        <a
-          class="font-semibold border border-blue-500 rounded px-1 mr-2 text-yellow-500"
-          href="/sports/<%= sport.id + '/session/' + session.id %>/edit"
-          >Edit
-        </a>
-        <button
-          class="text-red-500 border border-blue-500 rounded px-1 mx-2"
-          onclick="var result = window.confirm(`Do you want to confirm delete #<%- session.id %>?\nThis action cannot be undone!`)
+<body>
+  <div class="app">
+    <%- include('navbar') %>
+    <hr />
+    <div class="content-box">
+      <p class="text-4xl my-2">
+        <%= sport.name %> Session #<%= session.id %>
+      </p>
+      <p class="text-red-500 text-2xl my-2">
+        <%= session.cancelled ? 'This Session has been cancelled for the' +
+          ''+ ' reason ' + session.cancelled : '' %>
+      </p>
+      <button class="font-semibold mr-2 text-yellow-500" href="/sports/<%= sport.id + '/session/' + session.id %>/edit">
+        <%- user.role ==="admin" || user.id === session.userId ?
+          session.cancelled ? '': '<span class="border border-blue-500 rounded px-1">Edit</span>' : '' %>
+      </button>
+      <button class="text-red-500 mx-2" onclick="var result = window.confirm(`Do you want to confirm delete #<%- session.id %>?\nThis action cannot be undone!`)
         if(result) deleteSession(<%= sport.id + ',' + session.id %>)
-      "
-        >
-          Cancel Session
-        </button>
-        <p class="text-lg text-blue-500">
-          <i
-            >This session is scheduled for <%= session.schedule %>, to be played
-            at <%= session.venue %>.</i
-          >
-        </p>
-        <p class="text-3xl">Players</p>
-        <section class="my-4 grid gap-3 grid-cols-2">
-          <% for(i=0; i < session.players.length; i++) { %>
-          <div
-            class="flex rounded justify-between px-2 py-1 border border-gray-600"
-          >
-            <p class="text-xl">
-              <%= session.players[i] ? JSON.parse(session.players[i]).firstname
+      ">
+        <%- user.role ==="admin" || user.id === session.userId ?  '<span class="border border-blue-500 rounded px-1">Delete</span>' : ''
+          %>
+      </button>
+      <button class="bg-red-400 text-white rounded px-1 mx-2" onclick="cancelSession(<%= sport.id + ',' + session.id %>)
+      ">
+        <%= user.role ==="admin" || user.id === session.userId ?
+          session.cancelled ? '' : 'Cancel Session' : '' %>
+      </button>
+      <p class="text-lg text-blue-500">
+        <i>This session is scheduled for <%= session.schedule %>, to be played
+          at <%= session.venue %>.</i>
+      </p>
+      <p class="text-3xl">Players</p>
+      <section class="my-4 grid gap-3 grid-cols-2">
+        <% for(i=0; i < session.players.length; i++) { %>
+        <div class="flex rounded justify-between px-2 py-1 border border-gray-600">
+          <p class="text-xl">
+            <%= session.players[i] ? JSON.parse(session.players[i]).firstname + " " + JSON.parse(session.players[i]).lastname
               : '' %>
-            </p>
-            <p class="cursor-pointer text-bold text-xl text-gray-600">
-              <i class="text-yellow-500 mr-4 disabled"
-                ><%= session.userId == JSON.parse(session.players[i]).id ?
+            <%= user.id === JSON.parse(session.players[i]).id ? '(You)' : '' %>
+          </p>
+          <p class="cursor-pointer text-bold text-xl text-gray-600">
+            <i class="text-yellow-500 mr-4 disabled"><%= session.userId == JSON.parse(session.players[i]).id ?
                 'organiser' : '' %>
-              </i>
-              <!-- <span
+            </i>
+            <!-- <span
                 class="text-white bg-gray-400 rounded-lg px-2"
                 onclick="removePlayer()"
                 ><%#= typeof user === 'undefined' ? "x" : null %></span
               > -->
-            </p>
-          </div>
-          <% } %>
-        </section>
+          </p>
+        </div>
+        <% } %>
+      </section>
 
-        <i
-          class="cursor-pointer"
-          onclick="associateCurrentUserWithSession(<%- sport.id + ',' + session.id  %>)"
-        >
-          <%= currentUserInSportSession ? 'Leave' : 'Join' %> this session
-        </i>
-      </div>
+      <i class="cursor-pointer" onclick="associateCurrentUserWithSession(<%- sport.id + ',' + session.id  %>)">
+        <%= session.cancelled ? "" : currentUserInSportSession ? 'Leave this session' : session.extraPlayercount != 0 ? 'Join this session' : '' %>
+      </i>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

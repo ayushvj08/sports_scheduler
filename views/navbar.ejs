@@ -2,7 +2,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <header class="navbar items-center">
-  <div class="flex items-center">
+  <div class="flex items-center flex-wrap">
     <a href="/"><img class="nav-logo" src="/img/logo123.png" /></a>
     <%- typeof(user) !== 'undefined' ? user.role === 'admin' || user.role ===
     'superadmin' ? `<a
@@ -11,7 +11,12 @@
       >users</a
     >` : null : '' %>
 
-    <%- typeof(user) === 'undefined' ? `<a
+    <%- typeof(user) !== 'undefined' ? user.role === 'admin' ? `<a
+      class="ml-2 flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+      href="/report"
+      >report</a
+    >` : null : '' %>
+    <%- typeof(user) !== 'undefined' ? `<a
       class="ml-2 flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
       href="/my_sessions"
       >my sessions</a
@@ -21,18 +26,19 @@
   <div class="flex items-center justify-center">
     <!-- <p>This is right end!</p> -->
 
-    <a
-      href="/<%- typeof(user) === 'undefined' ? 'login' : 'signout' %>"
-      class="flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
-    >
+    <a href="/<%- typeof(user) === 'undefined' ? 'login' : 'signout' %>" class="flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
       <%- typeof(user) === 'undefined' ? 'Login' : 'Logout' %>
     </a>
   </div>
-  
+
 </header>
- <section class="error-box"> <% if(messages && messages.error && messages.error.length > 0)  { %>
+<section class="error-box"> <% if(messages && messages.error && messages.error.length > 0)  { %>
   <div class=" w-full px-6 py-8 md:px-8 lg:w-1/2">
-  <% for(var i=0; i<messages.error.length; i++) { %>
-          <div class="bg-red-500 text-white p-2 animate-pulse my-1 rounded" ><li> <%= messages.error[i] %></li></div>
-  <% } %></div>
-<% } %></section>
+    <% for(var i=0; i<messages.error.length; i++) { %>
+    <div class="bg-red-500 text-white p-2 animate-pulse my-1 rounded">
+      <li> <%= messages.error[i] %></li>
+    </div>
+    <% } %>
+  </div>
+  <% } %>
+</section>

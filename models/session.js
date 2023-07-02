@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       schedule: DataTypes.DATE,
       players: DataTypes.ARRAY(DataTypes.STRING),
       extraPlayercount: DataTypes.INTEGER,
+      cancelled: DataTypes.STRING,
     },
     {
       sequelize,

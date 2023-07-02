@@ -1,54 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/img/icon.png" />
-    <title><%- title %></title>
-  </head>
-  <script src="https://cdn.tailwindcss.com"></script>
 
-  <body>
-    <div class="app">
-      <%- include('navbar') %>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/img/icon.png" />
+  <title><%- title %></title>
+</head>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<body>
+  <div class="app">
+    <%- include('navbar') %>
+    <hr />
+    <div class="content-box">
+      <h1 class="text-5xl mt-4 font-semibold">
+        Welcome to sports scheduler!
+      </h1>
+      <p class="text-3xl my-2 text-blue-500">
+        <%- user.role ==="admin" ? '<a href="/sports">Create a New Sport</a>' : '' %>
+      </p>
       <hr />
-      <div class="content-box">
-        <h1 class="text-5xl mt-4 font-semibold">
-          Welcome to sports scheduler!
-        </h1>
-        <p class="text-3xl my-2 text-blue-500">
-          <a href="/sports">Create a New Sport</a>
+      <div>
+        <p>
+          <%= sessions.length == 0 ? "You don't have any upcoming session " +
+            "available. Consider joining any session from available sport " +
+            "sessions!" : "You have following Upcoming Sessions" %>
         </p>
-        <hr />
-        <div>
-          <p>You have following Upcoming Sessions</p>
 
-          <% for(i=0; i < sessions.length; i++) { %>
-          <div
-            class="my-1 box border border-blue-400 text-lg bg-blue-400 text-white rounded-md p-1 w-3/4"
-          >
-            <a
-              class="flex justify-between"
-              href="/sports/<%= sessions[i].sportId + '/session/' + sessions[i].id %>"
-              ><p><%= sessions[i].schedule %></p></a
-            >
-          </div>
-          <% } %>
+        <% for(i=0; i < sessions.length; i++) { %>
+        <div class="my-1 box border border-blue-400 text-lg bg-blue-400 text-white rounded-md p-1 w-3/4">
+          <a class="flex justify-between" href="/sports/<%= sessions[i].sportId + '/session/' + sessions[i].id %>">
+            <p><%= sessions[i].schedule %></p>
+          </a>
         </div>
-        <p class="text-2xl my-2">The following sports are available</p>
-        <section class="sports-list flex flex-wrap justify-between flex-row">
-          <% for(i=0; i < sports.length; i++) { %>
-          <div class="basis-1/3 my-2 mx-1 bg-blue-400 text-white p-2 rounded">
-            <p class="text-4xl text-center font-semibold">
-              <a href="/sports/<%= sports[i].id %>"
-                ><%- sports[i].name.toUpperCase() %></a
-              >
-            </p>
-          </div>
-          <% } %>
-        </section>
+        <% } %>
       </div>
+      <p class="text-2xl my-2">The following sports are available</p>
+      <section class="sports-list flex flex-wrap justify-between flex-row">
+        <% for(i=0; i < sports.length; i++) { %>
+        <div class="basis-1/3 my-2 mx-1 bg-blue-400 text-white p-2 rounded">
+          <a href="/sports/<%= sports[i].id %>">
+            <p class="text-4xl text-center font-semibold">
+              <%- sports[i].name.toUpperCase() %>
+            </p>
+          </a>
+        </div>
+        <% } %>
+      </section>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
