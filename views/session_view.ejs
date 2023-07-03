@@ -100,10 +100,10 @@
         <%= session.cancelled ? 'This Session has been cancelled for the' +
           ''+ ' reason ' + session.cancelled : '' %>
       </p>
-      <button class="font-semibold mr-2 text-yellow-500" href="/sports/<%= sport.id + '/session/' + session.id %>/edit">
+      <a class="font-semibold mr-2 text-yellow-500" href="/sports/<%= sport.id + '/session/' + session.id %>/edit">
         <%- user.role ==="admin" || user.id === session.userId ?
           session.cancelled ? '': '<span class="border border-blue-500 rounded px-1">Edit</span>' : '' %>
-      </button>
+      </a>
       <button class="text-red-500 mx-2" onclick="var result = window.confirm(`Do you want to confirm delete #<%- session.id %>?\nThis action cannot be undone!`)
         if(result) deleteSession(<%= sport.id + ',' + session.id %>)
       ">
@@ -143,7 +143,7 @@
       </section>
 
       <i class="cursor-pointer" onclick="associateCurrentUserWithSession(<%- sport.id + ',' + session.id  %>)">
-        <%= session.cancelled ? "" : currentUserInSportSession ? 'Leave this session' : session.extraPlayercount != 0 ? 'Join this session' : '' %>
+        <%= session.cancelled ? "" : currentUserInSportSession ? 'Leave this session' : session.schedule > new Date() ?  session.extraPlayercount != 0 ? 'Join this session' : '' : '' %>
       </i>
     </div>
   </div>

@@ -121,6 +121,7 @@ app.get(
           },
         });
         const obj = {
+          user: request.user,
           language: sport.dataValues.name,
           value: sessionData,
         };
@@ -129,7 +130,11 @@ app.get(
     );
     data = JSON.stringify(data);
     // console.log(data);
-    response.render("report", { data, csrfToken: request.csrfToken() });
+    response.render("report", {
+      user: request.user,
+      data,
+      csrfToken: request.csrfToken(),
+    });
   }
 );
 

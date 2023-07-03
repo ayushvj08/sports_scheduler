@@ -33,7 +33,7 @@
           <div class="mt-4">
             <label for="players" class="block mb-2 text-sm text-gray-600 dark:text-gray-200">Who all will be joining you in this Session?
               (Comma-seperated)</label>
-            <div class="my-2 flex" id="show-players-name"></div>
+            <div class="my-2 flex flex-wrap" id="show-players-name"></div>
             <select id="playerSelectDropdown" value onchange="setPlayers(<%-  'this.value'  %>)" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-200 rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:outline-none focus:ring focus:ring-primary dark:placeholder-gray-400 focus:ring-opacity-20">
               <option value="">-- Select an option --</option>
               <% for (i=0; i< users.length; i++) { %>

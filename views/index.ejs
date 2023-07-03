@@ -14,7 +14,7 @@
   <div class="app">
     <%- include('navbar') %>
     <hr />
-    <div class="content-box">
+    <div class="content-box text-center">
       <h1 class="text-5xl mt-4 font-semibold">
         Welcome to sports scheduler!
       </h1>
@@ -30,9 +30,10 @@
         </p>
 
         <% for(i=0; i < sessions.length; i++) { %>
-        <div class="my-1 box border border-blue-400 text-lg bg-blue-400 text-white rounded-md p-1 w-3/4">
-          <a class="flex justify-between" href="/sports/<%= sessions[i].sportId + '/session/' + sessions[i].id %>">
-            <p><%= sessions[i].schedule %></p>
+        <div class="my-1  box border text-lg <%= sessions[i].cancelled ? 'border-red-400 bg-red-400' : 'border-blue-400 bg-blue-400'  %> text-white rounded-md p-1">
+          <a class="flex flex-wrap" href="/sports/<%= sessions[i].sportId + '/session/' + sessions[i].id %>">
+            <p class="mr-2">#<%= sessions[i].venue %></p>
+            <p class="ml-1"><%= sessions[i].schedule %></p>
           </a>
         </div>
         <% } %>

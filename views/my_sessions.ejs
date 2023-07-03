@@ -1,34 +1,35 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="<%- csrfToken %>" />
-    <title>Sessions</title>
-    <link href="/css/style.css" rel="stylesheet" />
 
-    <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
-      rel="stylesheet"
-    />
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="<%- csrfToken %>" />
+  <title>Sessions</title>
+  <link href="/css/style.css" rel="stylesheet" />
 
-  <body>
-    <div class="app">
-      <%- include('navbar') %>
-      <hr />
-      <div class="content-box">
-        <h1 class="text-4xl mt-4 text-center font-semibold">My Sessions</h1>
-        <div class="my-2">
-          <% for(i =0; i<sessions.length; i++) { %>
-            <div class="cursor-pointer  my-2">
-                <a class="flex flex-row flex-wrap" href="<%= '/sports/' + sessions[i].sportId + '/session/' + sessions[i].id %>">
-          <p class="basis-1/6 bg-green-500 p-1 rounded font-semibold text-white">#<%= sports[i].name.toUpperCase()  %></p><p class="bg-blue-400 p-1 rounded text-white"><%= sessions[i].schedule %></p>
-          </a></div>
-          <% } %>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" />
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <%- include('navbar') %>
+    <hr />
+    <div class="content-box">
+      <h1 class="text-4xl mt-4 text-center font-semibold">My Sessions</h1>
+      <div class="my-2">
+        <% for(i =0; i<sessions.length; i++) { %>
+        <div class="cursor-pointer  my-2">
+          <a class="flex flex-row flex-wrap" href="<%= '/sports/' + sessions[i].sportId + '/session/' + sessions[i].id %>">
+            <p class="basis-1/6  <%= sessions[i].cancelled ? 'border-red-400 bg-red-400' : 'border-green-400 bg-green-400' %> p-1 rounded-sm font-semibold text-white">#<%= sports[i].name.toUpperCase()  %></p>
+            <p class="bg-blue-400 p-1 rounded-sm text-white"><%= sessions[i].schedule %></p>
+          </a>
         </div>
+        <% } %>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
