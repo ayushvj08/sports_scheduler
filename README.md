@@ -1,4 +1,5 @@
-# sports_scheduler
+# Sports_scheduler
+Your One Stop application for managing Sports Fixtures! 
 ## [Demo Video](https://drive.google.com/file/d/1Ozk5IPwIxvz36CqjkoG548LJeZE9dHUY/view?usp=sharing)
 
 `Sample Login Credentials :-`
