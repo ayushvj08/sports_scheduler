@@ -485,6 +485,8 @@ app.put(
     const session = await db.Session.findByPk(request.params.sessionId);
     console.log(request.body.associate);
     let players = session.players;
+    const initialPlayerCount = players.length;
+    const epc = session.extraPlayercount;
 
     request.body.associate === "join"
       ? players.push(JSON.stringify(request.user.dataValues))
@@ -493,7 +495,11 @@ app.put(
         ));
 
     const updatedSession = await db.Session.update(
-      { players: players },
+      {
+        players: players,
+        extraPlayercount:
+          initialPlayerCount > players.length ? epc + 1 : epc - 1,
+      },
       { where: { id: request.params.sessionId } }
     );
     if (request.accepts("html")) return response.json(updatedSession);
