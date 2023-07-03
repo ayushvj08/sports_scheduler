@@ -23,17 +23,18 @@
       </p>
       <hr />
       <div>
-        <p>
+        <i class="text-gray-500">
           <%= sessions.length == 0 ? "You don't have any upcoming session " +
             "available. Consider joining any session from available sport " +
             "sessions!" : "You have following Upcoming Sessions" %>
-        </p>
+        </i>
 
         <% for(i=0; i < sessions.length; i++) { %>
         <div class="my-1  box border text-lg <%= sessions[i].cancelled ? 'border-red-400 bg-red-400' : 'border-blue-400 bg-blue-400'  %> text-white rounded-md p-1">
           <a class="flex flex-wrap" href="/sports/<%= sessions[i].sportId + '/session/' + sessions[i].id %>">
-            <p class="mr-2">#<%= sessions[i].venue %></p>
-            <p class="ml-1"><%= sessions[i].schedule %></p>
+            <img class="mr-2" width="24" height="24" src="https://img.icons8.com/material-outlined/24/double-right.png" alt="double-right" />
+            <p class="mr-2"><%= sessions[i].venue %></p>
+            <p class="ml-1"><%= sessions[i].schedule.toLocaleString() %></p>
           </a>
         </div>
         <% } %>

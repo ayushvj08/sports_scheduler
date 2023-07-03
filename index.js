@@ -157,6 +157,7 @@ app.get("/", connectEnsureLogin.ensureLoggedIn(), async (request, response) => {
 });
 
 app.get("/login", (request, response) => {
+  if (request.user) response.redirect("/");
   response.render("login", { title: "Login", csrfToken: request.csrfToken() });
 });
 
