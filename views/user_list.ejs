@@ -1,47 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/img/icon.png" />
-    <title><%- title %></title>
-  </head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <body>
-    <div class="app">
-      <%- include('navbar') %>
-      <hr />
-      <div class="content-box">
-        <div class="user-actionbox flex items-center justify-center">
-          <h2 class="text-3xl my-2">List of Users</h2>
-          <a
-            class="ml-2 flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
-            href="/users/new"
-            >create new user</a
-          >
-        </div>
-        <main class="text-center">
-          <table>
-            <thead>
-              <th>Email</th>
-              <th>Role</th>
-            </thead>
-            <tbody>
-              <% for(i=0; i < users.length; i++) { %>
-              <tr>
-                <td>
-                  <p class="m-2"><%= users[i].email %></p>
-                </td>
-                <td>
-                  <p><%= users[i].role %></p>
-                </td>
-              </tr>
-              <% } %>
-            </tbody>
-          </table>
-        </main>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/img/icon.png" />
+  <title><%- title %></title>
+</head>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<body>
+  <div class="app">
+    <%- include('navbar') %>
+    <hr />
+    <div class="content-box">
+      <div class="user-actionbox flex items-center justify-center">
+        <h2 class="text-4xl my-2">List of Users</h2>
+        <a class="ml-2 flex items-center justify-center h-12 px-4 text-sm text-center text-gray-600 transition-colors duration-300 transform border border-blue-500 rounded-lg xl:h-10 dark:text-gray-300 dark:border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none" href="/users/new">create new user</a>
       </div>
+      <main class="my-4 text-center">
+        <table class="mx-auto">
+          <thead>
+            <th class="text-3xl font-normal">FullName</th>
+            <th class="text-3xl font-normal">Email</th>
+            <th class="text-3xl font-normal">Role</th>
+          </thead>
+          <tbody>
+            <% for(i=0; i < users.length; i++) { %>
+            <tr>
+              <td>
+                <p class="text-xl text-gray-500 m-2"><%= users[i].firstname + " " + users[i].lastname %></p>
+              </td>
+              <td>
+                <p class="text-xl text-gray-500 m-2"><%= users[i].email %></p>
+              </td>
+              <td>
+                <p class="text-xl text-gray-500 "><%= users[i].role %></p>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </main>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
